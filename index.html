@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIWES Atlas - Streamlining Student Internships</title>
+    <style>
+        :root {
+            --primary: #0066cc;
+            --primary-dark: #004499;
+            --success: #28a745;
+            --dark: #212529;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --border: #dee2e6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: #white;
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: white;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        /* View Switching Logic */
+        .view-section {
+            display: none;
+        }
+        .view-section.active {
+            display: block;
+        }
+
+        /* Simple Dashboard Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 2rem;
+        }
+
+        .sidebar {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            height: fit-content;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .sidebar-menu li.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        /* Cards & Tables */
+        .card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1.25rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        table th, table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        table th {
+            background-color: #f1f3f5;
+        }
+
+        .badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .badge-pending { background: #ffeeba; color: #856404; }
+        .badge-accepted { background: #d4edda; color: #155724; }
+
+        /* Form styling */
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">🌐 SIWES Atlas</div>
+        <div>
+            <span id="user-display" style="margin-right: 1rem; font-weight: 500;"></span>
+            <button class="btn" id="logout-btn" style="display:none;" onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <!-- 1. ONBOARDING / AUTHENTICATION FLOW -->
+        <section id="auth-view" class="view-section active">
+            <div class="card" style="max-width: 450px; margin: 4rem auto;">
+                <h2 style="margin-bottom: 1.5rem; text-align: center;">Student Onboarding</h2>
+                <form id="onboarding-form" onsubmit="handleOnboarding(event)">
+                    <div class="form-group">
+                        <label for="student-name">Full Name</label>
+                        <input type="text" id="student-name" required placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label for="matric-no">Matric Number</label>
+                        <input type="text" id="matric-no" required placeholder="202X/XXX/XXX">
+                    </div>
+                    <div class="form-group">
+                        <label for="department">Department</label>
+                        <select id="department">
+                            <option value="Computer Science">Computer Science</option>
+                            <option value="Electronic Engineering">Electronic Engineering</option>
+                            <option value="Mechanical Engineering">Mechanical Engineering</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn" style="width: 100%;">Access Placement Tracker</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- 2. MAIN TRACKING INTERFACE -->
+        <section id="dashboard-view" class="view-section">
+            <div class="dashboard-grid">
+                <aside class="sidebar">
+                    <ul class="sidebar-menu">
+                        <li class="active">Internship Tracker</li>
+                    </ul>
+                </aside>
+                
+                <main>
+                    <div class="card">
+                        <h2>Welcome to SIWES Atlas</h2>
+                        <p class="gray" id="welcome-text">Streamlining your industrial training search.</p>
+                    </div>
+
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3>Application Data Tracking</h3>
+                            <button class="btn" onclick="openApplicationModal()">+ Log New Application</button>
+                        </div>
+                        
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Company</th>
+                                    <th>Role</th>
+                                    <th>Date Applied</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="applications-table-body">
+                                <!-- Dynamic rows go here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </main>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // In-memory data store for tracking demo data
+        let applicationData = [
+            { company: "OPay Nigeria", role: "Frontend Engineering Intern", date: "2026-06-10", status: "Accepted" },
+            { company: "MainOne", role: "Network Operations Intern", date: "2026-06-14", status: "Pending" }
+        ];
+
+        function handleOnboarding(event) {
+            event.preventDefault();
+            const name = document.getElementById('student-name').value;
+            const matric = document.getElementById('matric-no').value;
+            
+            document.getElementById('user-display').innerText = `${name} (${matric})`;
+            document.getElementById('welcome-text').innerText = `Tracking profile active for ${name}. Keep your SIWES placements updated below.`;
+            document.getElementById('logout-btn').style.display = "inline-block";
+            
+            switchView('dashboard-view');
+            renderTable();
+        }
+
+        function switchView(viewId) {
+            document.querySelectorAll('.view-section').forEach(view => {
+                view.classList.remove('active');
+            });
+            document.getElementById(viewId).classList.add('active');
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('applications-table-body');
+            tbody.innerHTML = '';
+            
+            applicationData.forEach(app => {
+                const tr = document.createElement('tr');
+                const badgeClass = app.status === 'Accepted' ? 'badge-accepted' : 'badge-pending';
+                
+                tr.innerHTML = `
+                    <td><strong>${app.company}</strong></td>
+                    <td>${app.role}</td>
+                    <td>${app.date}</td>
+                    <td><span class="badge ${badgeClass}">${app.status}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function openApplicationModal() {
+            const company = prompt("Enter Company Name:");
+            const role = prompt("Enter Role (e.g., UI/UX Designer):");
+            if(company && role) {
+                const today = new Date().toISOString().split('T')[0];
+                applicationData.push({ company, role, date: today, status: "Pending" });
+                renderTable();
+            }
+        }
+
+        function logout() {
+            document.getElementById('logout-btn').style.display = "none";
+            document.getElementById('user-display').innerText = "";
+            document.getElementById('onboarding-form').reset();
+            switchView('auth-view');
+        }
+    </script>
+</body>
+</html>
